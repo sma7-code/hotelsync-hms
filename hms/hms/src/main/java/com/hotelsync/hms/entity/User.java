@@ -1,16 +1,18 @@
 package com.hotelsync.hms.entity;
 
 import com.hotelsync.hms.enums.ID_TYPE;
+import com.hotelsync.hms.enums.ROLE;
 import jakarta.persistence.*;
-import jakarta.validation.groups.Default;
+
+import java.sql.Timestamp;
 
 @Entity
-@Table
-public class user {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String user_id;
@@ -28,10 +30,15 @@ public class user {
     private String password;
 
     @Column(nullable = false)
-    private Enum<ROLE> role;
+    private ROLE role;
 
+    @Column(nullable = false)
+    public boolean is_first_login;
 
+    @Column(nullable = false)
+    public boolean is_active;
 
-
+    @Column(nullable = false)
+    public Timestamp created_at;
 
 }
