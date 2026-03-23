@@ -1,6 +1,6 @@
-package com.hotelsync.hms.enums;
+package com.hotelsync.hms.entity;
 
-public enum ROLE {
+public enum Role {
     ADMIN,
     RECEPTIONIST,
     MANAGER,

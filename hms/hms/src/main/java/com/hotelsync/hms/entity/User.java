@@ -1,11 +1,18 @@
 package com.hotelsync.hms.entity;
 
-import com.hotelsync.hms.enums.ID_TYPE;
-import com.hotelsync.hms.enums.ROLE;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User {
@@ -14,8 +21,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String user_id;
+    @Column(name = "user_id",unique = true, nullable = false)
+    private String userId;
 
     @Column(nullable = false)
     private String name;
@@ -23,22 +30,24 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(unique = true)
+    @Column
     private String phone;
 
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ROLE role;
+    private Role role;
 
-    @Column(nullable = false)
-    public boolean is_first_login;
+    @Column(name = "is_first_login",nullable = false)
+    private  boolean isFirstLogin;
 
-    @Column(nullable = false)
-    public boolean is_active;
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive;
 
-    @Column(nullable = false)
-    public Timestamp created_at;
+    @CreationTimestamp
+    @Column(name ="created_at",nullable = false,updatable = false)
+    private LocalDateTime createdAt;
 
 }
