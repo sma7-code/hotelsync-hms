@@ -35,4 +35,6 @@ build/
 .idea/
 *.iml
 target/
-application.properties
+
+# Spring Boot config
+src/main/resources/application.properties
