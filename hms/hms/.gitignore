@@ -35,3 +35,6 @@ build/
 .idea/
 *.iml
 target/
+
+# Spring Boot config
+hms/hms/src/main/resources/application.properties
