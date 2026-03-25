@@ -37,4 +37,4 @@ build/
 target/
 
 # Spring Boot config
-src/main/resources/application.properties
+hms/hms/src/main/resources/application.properties
