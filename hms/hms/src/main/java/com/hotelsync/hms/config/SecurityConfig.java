@@ -60,6 +60,10 @@ public class SecurityConfig {
                             .requestMatchers("/api/bills/restaurant/**")
                             .hasAnyRole("ACCOUNTANT","MANAGER")
 
+                            // This is Your Logout Api Configuration
+                            .requestMatchers("/api/auth/logout").authenticated()
+                            .anyRequest().permitAll()
+
 
                             //Other Authentication Request
                             .requestMatchers("/api/auth/**").authenticated()

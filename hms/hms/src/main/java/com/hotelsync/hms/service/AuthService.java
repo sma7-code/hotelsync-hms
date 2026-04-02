@@ -6,11 +6,15 @@ import com.hotelsync.hms.dto.LoginRequest;
 import com.hotelsync.hms.dto.LoginResponse;
 import com.hotelsync.hms.entity.User;
 import com.hotelsync.hms.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLOutput;
 
 
 @Service
@@ -20,6 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private TokenBlacklistService tokenBlacklistService;
 
     public LoginResponse login(LoginRequest loginRequest){
 
@@ -38,8 +43,6 @@ public class AuthService {
             throw new BadCredentialsException("Invalid userId or Password");
         }
 
-
-
         // Generate Token
         String token = jwtUtil.generateToken(user);
 
@@ -53,6 +56,25 @@ public class AuthService {
         );
 
     }
+
+    public String logout(HttpServletRequest request){
+
+        String authHeader = request.getHeader("Authorization");
+
+        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+
+            throw new RuntimeException("Token Missing");
+        }
+
+        String token = authHeader.substring(7);
+
+        tokenBlacklistService.addToBlacklist(token);
+
+        return "Your Account Has Been Logout.. ";
+
+
+    }
+
 
 
 

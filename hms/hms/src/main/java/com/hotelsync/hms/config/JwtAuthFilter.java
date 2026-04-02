@@ -1,6 +1,7 @@
 package com.hotelsync.hms.config;
 
 import com.hotelsync.hms.repository.UserRepository;
+import com.hotelsync.hms.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,9 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -38,7 +41,13 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
             token = authHeader.substring(7);
             username = jwtUtil.extractUserId(token);
+        }
 
+        // Check BlackList First
+        if(TokenBlacklistService.isBlacklisted(token)){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("The Token You Are Using Has Been Blacklisted");
+            return;
         }
 
         if(username!= null && SecurityContextHolder.getContext().getAuthentication()==null){
@@ -61,4 +70,9 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
         filterChain.doFilter(request, response);
     }
+
+
+
+
+
 }
