@@ -2,16 +2,19 @@ package com.hotelsync.hms.service;
 
 
 import com.hotelsync.hms.config.JwtUtil;
+import com.hotelsync.hms.dto.ChangePasswordRequest;
 import com.hotelsync.hms.dto.LoginRequest;
 import com.hotelsync.hms.dto.LoginResponse;
 import com.hotelsync.hms.dto.ProfileResponse;
 import com.hotelsync.hms.entity.User;
 import com.hotelsync.hms.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -100,6 +103,40 @@ public class AuthService {
 
     }
 
+    public  String changePassword(@Valid ChangePasswordRequest request) throws IllegalAccessException {
 
+        //1 Get Logged-in UserId
+        String userId =SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        //2 Fetch user
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(()->new UsernameNotFoundException("User Not Found"));
+
+        //3 Validate current password
+        if(!passwordEncoder.matches(request.getCurrentPassword(), request.getNewPassword())){
+            throw new BadCredentialsException("Invalid current password");
+        }
+
+        //4 Encoder new Password
+        String encoderPassword = passwordEncoder.encode(request.getNewPassword());
+
+        //5 Check That The Old And The New Password Can't Be Same
+        if(passwordEncoder.matches(request.getCurrentPassword(),request.getNewPassword())){
+            throw new IllegalAccessException("The New And Old Password Cant be same");
+        }
+
+        //6 First Login Change
+        if(user.isFirstLogin()){
+            user.setFirstLogin(false);
+        }
+
+        //7 Save User
+        userRepository.save(user);
+
+        return "The Password Has Been Successfully Changed";
+    }
 
     }

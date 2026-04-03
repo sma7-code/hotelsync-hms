@@ -1,6 +1,7 @@
 package com.hotelsync.hms.controller;
 
 
+import com.hotelsync.hms.dto.ChangePasswordRequest;
 import com.hotelsync.hms.dto.LoginRequest;
 import com.hotelsync.hms.dto.LoginResponse;
 import com.hotelsync.hms.dto.ProfileResponse;
@@ -35,6 +36,12 @@ public class AuthController {
     @GetMapping("/profile")
     public ResponseEntity<ProfileResponse> getProfile(){
         ProfileResponse response = authService.getProfile();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request){
+        String response = authService.changePassword(request);
         return ResponseEntity.ok(response);
     }
 
