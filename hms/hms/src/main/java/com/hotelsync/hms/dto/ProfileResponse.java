@@ -3,10 +3,10 @@ package com.hotelsync.hms.dto;
 
 import lombok.*;
 
-@Setter
-@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class ProfileResponse {
 
     private String userId;

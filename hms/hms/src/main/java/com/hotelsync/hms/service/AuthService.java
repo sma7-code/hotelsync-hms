@@ -71,7 +71,7 @@ public class AuthService {
 
         tokenBlacklistService.addToBlacklist(token);
 
-        return "Logged out successfully ..";
+        return "Logged out successfully";
 
 
     }
@@ -86,7 +86,7 @@ public class AuthService {
 
         // Step 2 - Fetch User From DB
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(()->new RuntimeException("User Not Found .."));
+                .orElseThrow(()->new RuntimeException("User Not Found"));
 
         // Step 3 - Map to DTO
 
