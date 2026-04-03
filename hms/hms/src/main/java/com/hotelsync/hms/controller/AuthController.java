@@ -3,15 +3,13 @@ package com.hotelsync.hms.controller;
 
 import com.hotelsync.hms.dto.LoginRequest;
 import com.hotelsync.hms.dto.LoginResponse;
+import com.hotelsync.hms.dto.ProfileResponse;
 import com.hotelsync.hms.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,4 +31,11 @@ public class AuthController {
         String response = authService.logout(request);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileResponse> getProfile(){
+        ProfileResponse response = authService.getProfile();
+        return ResponseEntity.ok(response);
+    }
+
  }

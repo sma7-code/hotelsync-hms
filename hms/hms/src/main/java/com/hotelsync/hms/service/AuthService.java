@@ -4,12 +4,14 @@ package com.hotelsync.hms.service;
 import com.hotelsync.hms.config.JwtUtil;
 import com.hotelsync.hms.dto.LoginRequest;
 import com.hotelsync.hms.dto.LoginResponse;
+import com.hotelsync.hms.dto.ProfileResponse;
 import com.hotelsync.hms.entity.User;
 import com.hotelsync.hms.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +76,29 @@ public class AuthService {
 
     }
 
+    public ProfileResponse getProfile(){
+
+        // Step 1 - get user Id from JWT Token
+        String userId = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        // Step 2 - Fetch User From DB
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(()->new RuntimeException("User Not Found .."));
+
+        // Step 3 - Map to DTO
+
+        return ProfileResponse.builder()
+                .userId(user.getUserId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .role(user.getRole().name())
+                .build();
+
+    }
 
 
 
