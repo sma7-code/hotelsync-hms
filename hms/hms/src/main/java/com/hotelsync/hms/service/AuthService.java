@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
+
 
 
 @Service
@@ -24,7 +23,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private TokenBlacklistService tokenBlacklistService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public LoginResponse login(LoginRequest loginRequest){
 
@@ -70,7 +69,7 @@ public class AuthService {
 
         tokenBlacklistService.addToBlacklist(token);
 
-        return "Your Account Has Been Logout.. ";
+        return "Logged out successfully ..";
 
 
     }

@@ -37,19 +37,19 @@ public class JwtAuthFilter extends OncePerRequestFilter{
         String token = null;
         String username = null;
 
-        if(authHeader!=null && authHeader.startsWith("Bearer ")){
+        if(authHeader!=null && authHeader.startsWith("Bearer ")) {
 
             token = authHeader.substring(7);
             username = jwtUtil.extractUserId(token);
-        }
 
-        // Check BlackList First
-        if(TokenBlacklistService.isBlacklisted(token)){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("The Token You Are Using Has Been Blacklisted");
-            return;
-        }
 
+            // Check BlackList First
+            if (TokenBlacklistService.isBlacklisted(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("The Token You Are Using Has Been Blacklisted");
+                return;
+            }
+        }
         if(username!= null && SecurityContextHolder.getContext().getAuthentication()==null){
 
             if(jwtUtil.validateToken(token)){

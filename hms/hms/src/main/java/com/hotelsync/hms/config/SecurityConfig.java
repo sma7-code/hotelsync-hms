@@ -54,15 +54,11 @@ public class SecurityConfig {
 
                             //Waiter + Chef + Manager + Accountant + Admin
                             .requestMatchers("/api/tables/**", "/api/orders/**")
-                            .hasAnyRole("WAITER","CHEF",",MANAGER","ACCOUNTANT","ADMIN")
+                            .hasAnyRole("WAITER","CHEF","MANAGER","ACCOUNTANT","ADMIN")
 
                             //Accountant + Manager
                             .requestMatchers("/api/bills/restaurant/**")
                             .hasAnyRole("ACCOUNTANT","MANAGER")
-
-                            // This is Your Logout Api Configuration
-                            .requestMatchers("/api/auth/logout").authenticated()
-                            .anyRequest().permitAll()
 
 
                             //Other Authentication Request
