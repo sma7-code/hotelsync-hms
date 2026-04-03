@@ -40,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request){
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) throws IllegalAccessException {
         String response = authService.changePassword(request);
         return ResponseEntity.ok(response);
     }
