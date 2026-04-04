@@ -9,7 +9,6 @@ import com.hotelsync.hms.dto.ProfileResponse;
 import com.hotelsync.hms.entity.User;
 import com.hotelsync.hms.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -103,7 +102,7 @@ public class AuthService {
 
     }
 
-    public  String changePassword(@Valid ChangePasswordRequest request) throws IllegalAccessException {
+    public  String changePassword(ChangePasswordRequest request) {
 
         //1 Get Logged-in UserId
         String userId =SecurityContextHolder
@@ -120,20 +119,21 @@ public class AuthService {
             throw new BadCredentialsException("Invalid current password");
         }
 
-        //4 Encoder new Password
-        String encoderPassword = passwordEncoder.encode(request.getNewPassword());
+        //4 Check That The New Password And The Old Password Not Be Same
+        if(request.getNewPassword().equals(request.getCurrentPassword())){
+            throw new BadCredentialsException("New Password And Old Password Are Same Please Change the New Password");
 
-        //5 Check That The Old And The New Password Can't Be Same
-        if(passwordEncoder.matches(request.getCurrentPassword(),request.getNewPassword())){
-            throw new IllegalAccessException("The New And Old Password Cant be same");
         }
 
-        //6 First Login Change
+        //5 Encode And Set new password into the user Object
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        //6 First Login Value Chnage Logic
         if(user.isFirstLogin()){
             user.setFirstLogin(false);
         }
 
-        //7 Save User
+        //7 Update the New Created Object in the Database
         userRepository.save(user);
 
         return "The Password Has Been Successfully Changed";
