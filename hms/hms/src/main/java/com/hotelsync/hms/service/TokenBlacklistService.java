@@ -1,6 +1,5 @@
 package com.hotelsync.hms.service;
 
-import org.hibernate.annotations.SecondaryRow;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;

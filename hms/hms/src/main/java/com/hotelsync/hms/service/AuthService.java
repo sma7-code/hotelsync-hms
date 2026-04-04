@@ -2,6 +2,7 @@ package com.hotelsync.hms.service;
 
 
 import com.hotelsync.hms.config.JwtUtil;
+import com.hotelsync.hms.dto.ChangePasswordRequest;
 import com.hotelsync.hms.dto.LoginRequest;
 import com.hotelsync.hms.dto.LoginResponse;
 import com.hotelsync.hms.dto.ProfileResponse;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -100,6 +102,41 @@ public class AuthService {
 
     }
 
+    public  String changePassword(ChangePasswordRequest request) {
 
+        //1 Get Logged-in UserId
+        String userId =SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        //2 Fetch user
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(()->new UsernameNotFoundException("User Not Found"));
+
+        //3 Validate current password
+        if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())){
+            throw new BadCredentialsException("Invalid current password");
+        }
+
+        //4 Check That The New Password And The Old Password Not Be Same
+        if(request.getNewPassword().equals(request.getCurrentPassword())){
+            throw new BadCredentialsException("New Password And Old Password Are Same Please Change the New Password");
+
+        }
+
+        //5 Encode And Set new password into the user Object
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        //6 First Login Value Chnage Logic
+        if(user.isFirstLogin()){
+            user.setFirstLogin(false);
+        }
+
+        //7 Update the New Created Object in the Database
+        userRepository.save(user);
+
+        return "The Password Has Been Successfully Changed";
+    }
 
     }
