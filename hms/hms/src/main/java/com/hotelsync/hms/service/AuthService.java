@@ -116,7 +116,7 @@ public class AuthService {
                 .orElseThrow(()->new UsernameNotFoundException("User Not Found"));
 
         //3 Validate current password
-        if(!passwordEncoder.matches(request.getCurrentPassword(), request.getNewPassword())){
+        if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())){
             throw new BadCredentialsException("Invalid current password");
         }
 
