@@ -88,7 +88,7 @@ public class AuthService {
 
         // Step 2 - Fetch User From DB
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(()->new RuntimeException("User Not Found"));
+                .orElseThrow(()->new UsernameNotFoundException("User Not Found"));
 
         // Step 3 - Map to DTO
 
