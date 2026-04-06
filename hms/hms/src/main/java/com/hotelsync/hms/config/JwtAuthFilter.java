@@ -21,7 +21,6 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter{
 
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
 
@@ -30,6 +29,14 @@ public class JwtAuthFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+
+        String path = request.getServletPath();
+
+        if (path.equals("/api/auth/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         final String authHeader = request.getHeader("Authorization");
 
