@@ -1,6 +1,6 @@
 package com.hotelsync.hms.config;
 
-import com.hotelsync.hms.repository.UserRepository;
+
 import com.hotelsync.hms.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,9 +31,9 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                                     FilterChain filterChain) throws ServletException, IOException {
 
 
-        String path = request.getServletPath();
+        String uri = request.getRequestURI();
 
-        if (path.equals("/api/auth/login")) {
+        if (uri.equals("/api/auth/login")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -71,6 +71,25 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                //  ADD THIS BLOCK (FIRST LOGIN ENFORCEMENT)
+
+                boolean isFirstLogin = jwtUtil.extractIsFirstLogin(token);
+
+                boolean isAllowedUri =
+                        uri.equals("/api/auth/change-password") ||
+                                uri.equals("/api/auth/logout");
+
+                if (isFirstLogin && !isAllowedUri) {
+
+                    SecurityContextHolder.clearContext();
+
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write(
+                            "Password change required before accessing system"
+                    );
+                    return;
+                }
             }
         }
 
