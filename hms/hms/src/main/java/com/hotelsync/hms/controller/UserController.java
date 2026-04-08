@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
@@ -24,4 +26,24 @@ public class UserController {
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+
+
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> getAllUsers(
+            @RequestParam(required = false) String role ){
+
+        List<UserResponse> users = userService.getAllUsers(role);
+
+        return ResponseEntity.ok(users);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable String id){
+        UserResponse user  = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+
+    }
+
 }
