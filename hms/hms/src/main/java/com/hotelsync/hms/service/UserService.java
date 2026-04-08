@@ -5,11 +5,15 @@ import com.hotelsync.hms.dto.*;
 import com.hotelsync.hms.entity.Role;
 import com.hotelsync.hms.entity.User;
 
+import com.hotelsync.hms.exception.GlobalExceptionHandler;
 import com.hotelsync.hms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -19,6 +23,29 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    // User id Generation Logic
+    private  String generateUserId(Role role){
+
+        // Note: potential race condition if two users created simultaneously
+        // Acceptable for current single-admin usage — revisit if concurrent access needed
+
+        long count = userRepository.countByRole(role)+1;
+
+        String prefix = switch (role){
+            case ADMIN -> "HMS-ADMIN-";
+            case RECEPTIONIST -> "HMS-RECEP-";
+            case MANAGER -> "HMS-MNGR-";
+            case WAITER -> "HMS-WAIT-";
+            case CHEF -> "HMS-CHEF-";
+            case ACCOUNTANT -> "HMS-ACCT-";
+        };
+
+        return prefix + String.format("%03d",count);
+
+
+
+    }
 
     public UserResponse createUser(CreateUserRequest request){
 
@@ -60,28 +87,45 @@ public class UserService {
             .build();
 }
 
-    // User id Generation Logic
-    private  String generateUserId(Role role){
+    public List<UserResponse> getAllUsers(String role) {
 
-        // Note: potential race condition if two users created simultaneously
-        // Acceptable for current single-admin usage — revisit if concurrent access needed
+        List<User> users;
 
-        long count = userRepository.countByRole(role)+1;
+        if (role != null && !role.trim().isEmpty()) {
 
-        String prefix = switch (role){
-            case ADMIN -> "HMS-ADMIN-";
-            case RECEPTIONIST -> "HMS-RECEP-";
-            case MANAGER -> "HMS-MNGR-";
-            case WAITER -> "HMS-WAIT-";
-            case CHEF -> "HMS-CHEF-";
-            case ACCOUNTANT -> "HMS-ACCT-";
-        };
+            Role roleEnum = Role.valueOf(role.trim().toUpperCase());
 
-        return prefix + String.format("%03d",count);
+            users = userRepository.findByRole(roleEnum);
 
+        } else {
+            users = userRepository.findAll();
+        }
 
-
+        return users.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
+    private UserResponse mapToResponse(User user) {
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .userId(user.getUserId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .role(user.getRole().name())
+                .isActive(user.isActive())
+                .isFirstLogin(user.isFirstLogin())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+
+    public UserResponse getUserById(String id){
+        User user = userRepository.findByUserId(id)
+                .orElseThrow(()-> new GlobalExceptionHandler.ResourceNotFoundException("User Not Found"));
+
+        return mapToResponse(user);
+    }
 
 }
