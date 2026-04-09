@@ -5,7 +5,7 @@ import com.hotelsync.hms.dto.*;
 import com.hotelsync.hms.entity.Role;
 import com.hotelsync.hms.entity.User;
 
-import com.hotelsync.hms.exception.GlobalExceptionHandler;
+import com.hotelsync.hms.exception.ResourceNotFoundException;
 import com.hotelsync.hms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -13,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +91,8 @@ public class UserService {
 
         if (role != null && !role.trim().isEmpty()) {
 
+            // Role.valueOf throws IllegalArgumentException for invalid values
+            // Caught by GlobalExceptionHandler.handle IllegalArgument()
             Role roleEnum = Role.valueOf(role.trim().toUpperCase());
 
             users = userRepository.findByRole(roleEnum);
@@ -121,10 +121,9 @@ public class UserService {
                 .build();
     }
 
-    public UserResponse getUserById(String id){
-        User user = userRepository.findByUserId(id)
-                .orElseThrow(()-> new GlobalExceptionHandler.ResourceNotFoundException("User Not Found"));
-
+    public UserResponse getUserById(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("User Not Found With Id No:-"+id));
         return mapToResponse(user);
     }
 
