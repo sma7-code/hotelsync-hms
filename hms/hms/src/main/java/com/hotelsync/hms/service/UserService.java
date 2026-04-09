@@ -135,8 +135,8 @@ public class UserService {
             User existingUser = userRepository.findByEmail(updateUserRequest.getEmail()).orElse(null);
 
 
-            if (existingUser != null && existingUser.getId().equals(id)) {
-                throw new RuntimeException("Email Already Exists");
+            if (existingUser != null && !existingUser.getId().equals(id)) {
+                throw new RuntimeException("Email already exists");
             }
         }
 
