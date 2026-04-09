@@ -157,6 +157,21 @@ public class UserService {
 
         return mapToResponse(userUpdated);
 
+    }
+
+    public String deactivateUser(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException
+                        ("This User Id Dont Exist On The Database"));
+
+        if(!user.isActive()){
+            throw new IllegalStateException("The User Is Already Deactivated");
+        }
+
+
+        user.setActive(false);
+        userRepository.save(user);
+        return "The User Has Been Deactivated";
 
 
     }
