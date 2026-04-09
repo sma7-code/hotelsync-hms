@@ -9,6 +9,7 @@ import com.hotelsync.hms.exception.ResourceNotFoundException;
 import com.hotelsync.hms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -125,6 +126,23 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("User Not Found With Id No:-"+id));
         return mapToResponse(user);
+    }
+
+    public String deactivateUser(Long id){
+        User user = userRepository.findById(id)
+                        .orElseThrow(()-> new ResourceNotFoundException
+                                ("This User Id Dont Exist On The Database"));
+
+        if(!user.isActive()){
+            throw new IllegalStateException("The User Is Already Deactivated");
+        }
+
+
+        user.setActive(false);
+        userRepository.save(user);
+        return "The User Has Been Deactivated";
+
+
     }
 
 }

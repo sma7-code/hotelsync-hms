@@ -46,4 +46,12 @@ public class UserController {
 
     }
 
+    @GetMapping("/deactivate/{id}")
+    public ResponseEntity<String> deactiveUser(@PathVariable Long id){
+
+        String Status = userService.deactivateUser(id);
+
+        return ResponseEntity.ok(Status);
+    }
+
 }
