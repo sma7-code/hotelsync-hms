@@ -1,6 +1,7 @@
 package com.hotelsync.hms.controller;
 
 import com.hotelsync.hms.dto.CreateUserRequest;
+import com.hotelsync.hms.dto.UpdateUserRequest;
 import com.hotelsync.hms.dto.UserResponse;
 import com.hotelsync.hms.service.UserService;
 import jakarta.validation.Valid;
@@ -28,10 +29,9 @@ public class UserController {
     }
 
 
-
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers(
-            @RequestParam(required = false) String role ){
+            @RequestParam(required = false) String role) {
 
         List<UserResponse> users = userService.getAllUsers(role);
 
@@ -40,8 +40,15 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id){
-        UserResponse user  = userService.getUserById(id);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        UserResponse user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+        UserResponse user = userService.updateUser(id, request);
         return ResponseEntity.ok(user);
 
     }

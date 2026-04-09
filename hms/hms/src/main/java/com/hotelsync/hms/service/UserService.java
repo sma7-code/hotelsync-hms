@@ -127,4 +127,38 @@ public class UserService {
         return mapToResponse(user);
     }
 
+    public UserResponse updateUser(Long id , UpdateUserRequest updateUserRequest){
+
+        User user = userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User Not Found By Id :-"+id));
+
+        if(updateUserRequest.getEmail()!=null) {
+            User existingUser = userRepository.findByEmail(updateUserRequest.getEmail()).orElse(null);
+
+
+            if (existingUser != null && !existingUser.getId().equals(id)) {
+                throw new RuntimeException("Email already exists");
+            }
+        }
+
+        if(updateUserRequest.getName()!=null) {
+            user.setName(updateUserRequest.getName());
+        }
+
+        if(updateUserRequest.getEmail()!=null) {
+            user.setEmail(updateUserRequest.getEmail());
+        }
+
+        if(updateUserRequest.getPhone()!=null) {
+            user.setPhone(updateUserRequest.getPhone());
+        }
+
+
+        User userUpdated = userRepository.save(user);
+
+        return mapToResponse(userUpdated);
+
+
+
+    }
+
 }
