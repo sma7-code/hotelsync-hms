@@ -1,6 +1,7 @@
 package com.hotelsync.hms.controller;
 
 import com.hotelsync.hms.dto.CreateUserRequest;
+import com.hotelsync.hms.dto.ResetPasswordRequest;
 import com.hotelsync.hms.dto.UpdateUserRequest;
 import com.hotelsync.hms.dto.UserResponse;
 import com.hotelsync.hms.service.UserService;
@@ -53,7 +54,7 @@ public class UserController {
 
     }
 
-    @PatchMapping("/deactivate/{id}")
+    @PatchMapping("/{id}/deactivate")
     public ResponseEntity<String> deactivateUser(@PathVariable Long id){
 
         String Status = userService.deactivateUser(id);
@@ -62,8 +63,10 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/reset-password")
-    public ResponseEntity<String> resetPassword(@PathVariable Long id,@RequestBody String Password){
-      String Status = userService.resetPassword(id, Password);
+    public ResponseEntity<String> resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordRequest request){
+
+
+      String Status = userService.resetPassword(id, request);
        return ResponseEntity.ok(Status);
 
     }
