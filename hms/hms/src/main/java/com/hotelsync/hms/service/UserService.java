@@ -7,10 +7,12 @@ import com.hotelsync.hms.entity.User;
 
 import com.hotelsync.hms.exception.ResourceNotFoundException;
 import com.hotelsync.hms.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -176,4 +178,21 @@ public class UserService {
 
     }
 
+    public String resetPassword(Long id, @Valid @RequestBody ResetPasswordRequest request) {
+
+       User user = userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User Not Existed"));
+
+       user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+
+           user.setFirstLogin(true);
+
+
+       userRepository.save(user);
+
+
+       return "The password Has Been Changed";
+
+
+    }
 }
