@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -176,4 +177,18 @@ public class UserService {
 
     }
 
+    public String resetPassword(Long id, String password) {
+
+       User user = userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User Not Existed"));
+
+       user.setPassword(passwordEncoder.encode(password));
+       user.setFirstLogin(true);
+
+       userRepository.save(user);
+
+
+       return "The password Has Been Changed";
+
+
+    }
 }

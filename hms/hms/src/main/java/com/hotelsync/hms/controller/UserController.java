@@ -61,4 +61,11 @@ public class UserController {
         return ResponseEntity.ok(Status);
     }
 
+    @PatchMapping("/{id}/reset-password")
+    public ResponseEntity<String> resetPassword(@PathVariable Long id,@RequestBody String Password){
+      String Status = userService.resetPassword(id, Password);
+       return ResponseEntity.ok(Status);
+
+    }
+
 }
